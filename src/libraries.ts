@@ -1,9 +1,9 @@
-const libs = import.meta.glob("/public/mc/libraries/**/*.jar", {
-	as: "url",
-	eager: true,
-}); // FIXME: Slow!
-
 export default function getLibraries(): string[] {
+	const libs = import.meta.glob("/public/mc/libraries/**/*.jar", {
+		as: "url",
+		eager: true,
+	});
+
 	let keys = Object.keys(libs);
 	return keys.map((libPath) => libPath.replace("/public/", "/app/"));
 }

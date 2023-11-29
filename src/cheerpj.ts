@@ -1,5 +1,9 @@
 import getLibraries from "./libraries";
-import { mainClass } from "../public/mc/index.json";
+import {
+	mainClass,
+	version,
+	minecraftArguments,
+} from "../public/mc/index.json";
 
 export async function initCheerpj() {
 	let classPath = getLibraries().join(":");
@@ -11,13 +15,18 @@ export async function initCheerpj() {
 
 	console.table({
 		mainClass,
+		version,
 	});
 
 	const exitCode = await cheerpjRunMain(
 		mainClass,
 		classPath,
+		minecraftArguments
+			.replaceAll("${auth_player_name}", "testing!")
+			.replaceAll("${version_name}", version)
+			.replaceAll("${assetIndex}", "1.12")
+			.replaceAll("${auth_player_name}", "testing!")
+			.replaceAll("${accessToken}", "test"),
 		"--demo",
-		"boing",
-		"1.12.2",
 	);
 }
