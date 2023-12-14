@@ -2,6 +2,8 @@
   "name": "-skycraft",
   "version": "0.0.0",
   "devDependencies": {
+    "axios": "^1.6.2",
+    "mkdirp": "^3.0.1",
     "prettier": "^3.0.3",
     "typescript": "^5.0.2",
     "vite": "^4.4.5"
@@ -10,7 +12,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "downloadLibraries": "node downloadLibraries.js"
   },
   "type": "module"
 }
