@@ -1,5 +1,3 @@
-// Crappy version of Gradle
-// I know this is bad, but it's better than nothing
 import { createWriteStream } from "fs";
 import { sync as syncChildDirs } from "mkdirp";
 import { fileURLToPath } from "url";
@@ -8,7 +6,7 @@ import download from "download";
 import axios from "axios";
 import ora from "ora";
 
-// TODO: make this configurable
+// URL for the launcher metadata
 const LAUNCHER_META_URL =
 	"https://piston-meta.mojang.com/v1/packages/832d95b9f40699d4961394dcf6cf549e65f15dc5/1.12.2.json";
 
@@ -17,12 +15,18 @@ const currentDirName = dirname(__filename);
 
 const ROOT_PATH = joinPath(currentDirName, "..", "public", "mc");
 
-const launcherMeta = (await axios.get(LAUNCHER_META_URL)).data;
-const libraries: Library[] = launcherMeta.libraries;
+// Fetch the launcher metadata
+const launcherMeta: MinecraftJson = (await axios.get(LAUNCHER_META_URL)).data;
+const libraries = launcherMeta.libraries;
 
-const files: File[] = [
+type DownloadableFile = {
+	friendlyName: string;
+	url: string;
+	destinationPath: string;
+};
+const filesToDownload: DownloadableFile[] = [
 	{
-		friendlyName: "Minecraft 1.12.2 - Launcher Meta", // FIXME: duplicated request (not a big deal, but still)
+		friendlyName: "Minecraft 1.12.2 - Launcher Meta",
 		url: LAUNCHER_META_URL,
 		destinationPath: joinPath(ROOT_PATH, "launcher_meta.json"),
 	},
@@ -35,61 +39,59 @@ const files: File[] = [
 
 libraries.forEach((library) => {
 	console.log(library.name);
-	files.push({
-		friendlyName: library.name,
-		url: library.downloads.artifact.url,
-		destinationPath: joinPath(
-			ROOT_PATH,
-			"libraries",
-			library.downloads.artifact.path,
-		),
-	});
+	if (library.natives) {
+		console.log(library.natives);
+		const classifier = library.natives.linux;
+		const native = library.downloads.classifiers![classifier];
+
+		// Check if the native is available for linux
+		if (native) {
+			filesToDownload.push({
+				friendlyName: library.name,
+				url: native.url,
+				destinationPath: joinPath(ROOT_PATH, "natives", native.path),
+			});
+		}
+	}
+
+	if (library.downloads.artifact) {
+		filesToDownload.push({
+			friendlyName: library.name,
+			url: library.downloads.artifact.url,
+			destinationPath: joinPath(
+				ROOT_PATH,
+				"libraries",
+				library.downloads.artifact.path,
+			),
+		});
+	}
 });
 
-console.info(`Downloading ${files.length} files...`);
+console.info(`Downloading ${filesToDownload.length} files...`);
 
-await Promise.all(files.map((file) => downloadFile({ ...file })));
+await Promise.all(filesToDownload.map((file) => downloadFile(file)));
 
-/// --- Utility functions ---
-async function downloadFile({ url, friendlyName, destinationPath }) {
-	const spinner = ora(`Downloading ${friendlyName}`).start();
+async function downloadFile(file: DownloadableFile) {
+	const spinner = ora(`Downloading ${file.friendlyName}`).start();
 
-	syncChildDirs(dirname(destinationPath));
-	const response = await axios({
-		method: "get",
-		url: url,
-		responseType: "stream",
-	});
-
-	response.data.pipe(createWriteStream(destinationPath));
-
-	return new Promise<void>((resolve, reject) => {
-		response.data.on("end", () => {
-			spinner.succeed(`Downloaded ${friendlyName}`);
-			resolve();
+	try {
+		syncChildDirs(dirname(file.destinationPath));
+		const response = await axios({
+			method: "get",
+			url: file.url,
+			responseType: "stream",
 		});
 
-		response.data.on("error", (err) => {
-			spinner.fail(`Failed to download ${friendlyName}`);
-			reject(err);
+		response.data.pipe(createWriteStream(file.destinationPath));
+
+		await new Promise((resolve, reject) => {
+			response.data.on("end", resolve);
+			response.data.on("error", reject);
 		});
-	});
+
+		spinner.succeed(`Downloaded ${file.friendlyName}`);
+	} catch (error) {
+		spinner.fail(`Failed to download ${file.friendlyName}`);
+		throw error;
+	}
 }
-
-/// --- Types ---
-type File = {
-	friendlyName: string;
-	url: string;
-	destinationPath: string;
-};
-type Library = {
-	downloads: {
-		artifact: {
-			path: string;
-			url: string;
-			sha1: string;
-			size: number;
-		};
-	};
-	name: string;
-};
