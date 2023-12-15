@@ -19,12 +19,12 @@ const ROOT_PATH = joinPath(currentDirName, "..", "public", "mc");
 
 const launcherMeta = (await axios.get(LAUNCHER_META_URL)).data;
 
-type Task = {
+type File = {
 	friendlyName: string;
 	url: string;
 	destinationPath: string;
 };
-const tasks: Task[] = [
+const files: File[] = [
 	{
 		friendlyName: "Minecraft 1.12.2 - Launcher Meta", // FIXME: duplicated request (not a big deal, but still)
 		url: LAUNCHER_META_URL,
@@ -36,6 +36,7 @@ const tasks: Task[] = [
 		destinationPath: joinPath(ROOT_PATH, "client.jar"),
 	},
 ];
+console.info(`Downloading ${files.length} files...`);
 
 async function downloadFile({ url, friendlyName, destinationPath }) {
 	const spinner = ora(`Downloading ${friendlyName}`).start();
@@ -62,11 +63,4 @@ async function downloadFile({ url, friendlyName, destinationPath }) {
 	});
 }
 
-tasks.forEach(async (task) => {
-	const { url, friendlyName, destinationPath } = task;
-	await downloadFile({
-		url,
-		friendlyName,
-		destinationPath,
-	});
-});
+await Promise.all(files.map((file) => downloadFile({ ...file })));

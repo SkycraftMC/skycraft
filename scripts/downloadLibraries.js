@@ -10,21 +10,22 @@ import ora from "ora";
 const LAUNCHER_META_URL = "https://piston-meta.mojang.com/v1/packages/832d95b9f40699d4961394dcf6cf549e65f15dc5/1.12.2.json";
 const __filename = fileURLToPath(import.meta.url);
 const currentDirName = dirname(__filename);
-const ROOT_PATH = joinPath(currentDirName, ".", "public", "mc");
+const ROOT_PATH = joinPath(currentDirName, "..", "public", "mc");
 const launcherMeta = (await axios.get(LAUNCHER_META_URL)).data;
-const tasks = [
+const files = [
     {
-        name: "Minecraft 1.12.2 - Launcher Meta",
+        friendlyName: "Minecraft 1.12.2 - Launcher Meta",
         url: LAUNCHER_META_URL,
         destinationPath: joinPath(ROOT_PATH, "launcher_meta.json"),
     },
     {
-        name: "Minecraft 1.12.2 - Client Jar",
+        friendlyName: "Minecraft 1.12.2 - Client Jar",
         url: launcherMeta.downloads.client.url,
         destinationPath: joinPath(ROOT_PATH, "client.jar"),
     },
 ];
-async function downloadFile(url, friendlyName, destinationPath) {
+console.info(`Downloading ${files.length} files...`);
+async function downloadFile({ url, friendlyName, destinationPath }) {
     const spinner = ora(`Downloading ${friendlyName}`).start();
     syncChildDirs(dirname(destinationPath));
     const response = await axios({
@@ -44,6 +45,4 @@ async function downloadFile(url, friendlyName, destinationPath) {
         });
     });
 }
-tasks.forEach(async (task) => {
-    await downloadFile(task.url, task.name, task.destinationPath);
-});
+await Promise.all(files.map((file) => downloadFile({ ...file })));
