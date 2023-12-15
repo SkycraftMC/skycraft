@@ -2,8 +2,11 @@
   "name": "-skycraft",
   "version": "0.0.0",
   "devDependencies": {
+    "@types/node": "^20.10.4",
     "axios": "^1.6.2",
+    "download": "^8.0.0",
     "mkdirp": "^3.0.1",
+    "ora": "^7.0.1",
     "prettier": "^3.0.3",
     "typescript": "^5.0.2",
     "vite": "^4.4.5"
@@ -13,7 +16,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "downloadLibraries": "node downloadLibraries.js"
+    "downloadLibraries": "tsc ./scripts/downloadLibraries.ts --module nodenext --moduleResolution nodenext --target esnext && node ./scripts/downloadLibraries.js"
   },
   "type": "module"
 }
