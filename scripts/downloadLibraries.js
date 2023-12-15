@@ -12,6 +12,7 @@ const __filename = fileURLToPath(import.meta.url);
 const currentDirName = dirname(__filename);
 const ROOT_PATH = joinPath(currentDirName, "..", "public", "mc");
 const launcherMeta = (await axios.get(LAUNCHER_META_URL)).data;
+const libraries = launcherMeta.libraries;
 const files = [
     {
         friendlyName: "Minecraft 1.12.2 - Launcher Meta",
@@ -25,6 +26,8 @@ const files = [
     },
 ];
 console.info(`Downloading ${files.length} files...`);
+await Promise.all(files.map((file) => downloadFile({ ...file })));
+/// --- Utility functions ---
 async function downloadFile({ url, friendlyName, destinationPath }) {
     const spinner = ora(`Downloading ${friendlyName}`).start();
     syncChildDirs(dirname(destinationPath));
@@ -45,4 +48,3 @@ async function downloadFile({ url, friendlyName, destinationPath }) {
         });
     });
 }
-await Promise.all(files.map((file) => downloadFile({ ...file })));

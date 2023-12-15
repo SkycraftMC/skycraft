@@ -18,12 +18,8 @@ const currentDirName = dirname(__filename);
 const ROOT_PATH = joinPath(currentDirName, "..", "public", "mc");
 
 const launcherMeta = (await axios.get(LAUNCHER_META_URL)).data;
+const libraries: Library[] = launcherMeta.libraries;
 
-type File = {
-	friendlyName: string;
-	url: string;
-	destinationPath: string;
-};
 const files: File[] = [
 	{
 		friendlyName: "Minecraft 1.12.2 - Launcher Meta", // FIXME: duplicated request (not a big deal, but still)
@@ -36,8 +32,25 @@ const files: File[] = [
 		destinationPath: joinPath(ROOT_PATH, "client.jar"),
 	},
 ];
+
+libraries.forEach((library) => {
+	console.log(library.name);
+	files.push({
+		friendlyName: library.name,
+		url: library.downloads.artifact.url,
+		destinationPath: joinPath(
+			ROOT_PATH,
+			"libraries",
+			library.downloads.artifact.path,
+		),
+	});
+});
+
 console.info(`Downloading ${files.length} files...`);
 
+await Promise.all(files.map((file) => downloadFile({ ...file })));
+
+/// --- Utility functions ---
 async function downloadFile({ url, friendlyName, destinationPath }) {
 	const spinner = ora(`Downloading ${friendlyName}`).start();
 
@@ -63,4 +76,20 @@ async function downloadFile({ url, friendlyName, destinationPath }) {
 	});
 }
 
-await Promise.all(files.map((file) => downloadFile({ ...file })));
+/// --- Types ---
+type File = {
+	friendlyName: string;
+	url: string;
+	destinationPath: string;
+};
+type Library = {
+	downloads: {
+		artifact: {
+			path: string;
+			url: string;
+			sha1: string;
+			size: number;
+		};
+	};
+	name: string;
+};
