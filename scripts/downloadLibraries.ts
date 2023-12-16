@@ -26,6 +26,7 @@ type DownloadableFile = {
 };
 const filesToDownload: DownloadableFile[] = [
 	{
+		// FIXME: duplicated request
 		friendlyName: "Minecraft 1.12.2 - Launcher Meta",
 		url: LAUNCHER_META_URL,
 		destinationPath: joinPath(ROOT_PATH, "launcher_meta.json"),
