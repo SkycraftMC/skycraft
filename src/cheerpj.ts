@@ -9,6 +9,7 @@ import {
 
 export async function initCheerpj() {
 	let classPath = getLibraries().join(":");
+	console.debug("Classpath:", classPath);
 
 	if (javaVersion.majorVersion != 8) {
 		throw new Error(
