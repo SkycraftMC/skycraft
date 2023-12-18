@@ -18,7 +18,7 @@ export async function initCheerpj() {
 	}
 
 	await cheerpjInit({
-		javaProperties: ["java.library.path=natives"],
+		javaProperties: ["java.library.path=/app/nativeImpls"],
 		clipboardMode: "permission",
 	});
 	cheerpjCreateDisplay(-1, -1, document.getElementById("container"));
