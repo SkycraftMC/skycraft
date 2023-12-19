@@ -1,6 +1,6 @@
 import "./style.css";
 
-import { initCheerpj } from "./cheerpj";
+import { initCheerpj } from "./cheerpj.js";
 
 // TODO: get rid of the IIFE
 (async () => {

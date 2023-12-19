@@ -1,4 +1,4 @@
-import getLibraries from "./libraries";
+import getLibraries from "./libraries.js";
 import {
 	mainClass,
 	id as mcVersion,
@@ -21,7 +21,7 @@ export async function initCheerpj() {
 		javaProperties: ["java.library.path=/app/nativeImpls"],
 		clipboardMode: "permission",
 	});
-	cheerpjCreateDisplay(-1, -1, document.getElementById("container"));
+	cheerpjCreateDisplay(-1, -1, document.getElementById("container")!);
 
 	console.table({
 		mainClass,
@@ -39,4 +39,7 @@ export async function initCheerpj() {
 			.replaceAll("${accessToken}", "test"),
 		"--demo",
 	);
+	if (exitCode !== 0) {
+		alert(`MC exited with exit code ${exitCode}`);
+	}
 }

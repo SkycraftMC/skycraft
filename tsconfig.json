@@ -8,16 +8,19 @@
 
 		/* Bundler mode */
 		"moduleResolution": "bundler",
-		"allowImportingTsExtensions": true,
 		"resolveJsonModule": true,
 		"isolatedModules": true,
-		"noEmit": true,
 
 		/* Linting */
 		"strict": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
-		"noFallthroughCasesInSwitch": true
+		"noFallthroughCasesInSwitch": true,
+
+		/* Build output */
+		"rootDirs": ["src", "public"],
+		"outDir": "dist",
+		"sourceMap": true
 	},
-	"include": ["src"]
+	"include": ["src"],
 }
