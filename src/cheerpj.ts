@@ -1,4 +1,4 @@
-import getLibraries from "./libraries";
+import getClasspath from "./classpath";
 import {
 	mainClass,
 	id as mcVersion,
@@ -8,7 +8,7 @@ import {
 } from "../mc/launcher_meta.json";
 
 export async function initCheerpj() {
-	let classPath = getLibraries().join(":");
+	let classPath = getClasspath().join(":");
 	console.debug("Classpath:", classPath);
 
 	if (javaVersion.majorVersion != 8) {
@@ -39,4 +39,12 @@ export async function initCheerpj() {
 			.replaceAll("${accessToken}", "test"),
 		"--demo",
 	);
+
+	if (exitCode !== 0) {
+		// TODO: add the Discord link
+		alert(
+			`Oops, Minecraft crashed!\n\nExit code: ${exitCode}\n\nPlease report this to the devs: @justhypex on Discord`,
+		);
+		throw new Error(`Minecraft exited with code ${exitCode}`);
+	}
 }
