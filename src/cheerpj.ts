@@ -21,7 +21,7 @@ export async function initCheerpj() {
 		javaProperties: ["java.library.path=/app/nativeImpls"],
 		clipboardMode: "permission",
 	});
-	cheerpjCreateDisplay(-1, -1, document.getElementById("container"));
+	cheerpjCreateDisplay(-1, -1, document.getElementById("container")!);
 
 	console.table({
 		mainClass,
