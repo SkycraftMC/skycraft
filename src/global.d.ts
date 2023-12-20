@@ -39,6 +39,11 @@ declare global {
 		classPath: string,
 		...args: string[]
 	): Promise<number>;
+
+	function cheerpOSAddStringFile(
+		path: string,
+		data: string | Uint8Array,
+	): void;
 }
 
 export {};

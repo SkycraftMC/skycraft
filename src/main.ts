@@ -1,19 +1,62 @@
 import "./style.css";
 
-import { initCheerpj } from "./cheerpj";
+import getClasspath from "./classpath";
+import {
+	mainClass,
+	id as mcVersion,
+	minecraftArguments,
+	javaVersion,
+} from "../mc/launcher_meta.json";
 
 // TODO: get rid of the IIFE
 (async () => {
-	console.log(
-		"%cHi! Welcome to Skycraft!",
-		"font-size: 2em; color: #00ff00;",
+	if (javaVersion.majorVersion != 8) {
+		throw new Error(
+			"Unsupported Java version: CheerpJ only supports Java 8",
+		);
+	}
+
+	let classpath = getClasspath();
+	console.debug(classpath);
+
+	await cheerpjInit({
+		javaProperties: ["java.library.path=/app/nativeImpls"],
+		clipboardMode: "permission",
+	});
+	cheerpjCreateDisplay(-1, -1, document.getElementById("container")!);
+
+	console.table({
+		mainClass,
+		mcVersion,
+		minecraftArguments,
+	});
+
+	// Download the JARs
+	await Promise.all(
+		classpath.map(async (filePath) => {
+			const response = await fetch(filePath);
+			if (!response.ok) throw new Error(`Failed to download ${filePath}`);
+			const arrayBuffer = await response.arrayBuffer();
+			const data = new Uint8Array(arrayBuffer);
+			cheerpOSAddStringFile(filePath.replace("/mc/", "/str/mc/"), data);
+		}),
 	);
-	console.log(
-		"%cHere to debug? Make sure all logging levels are enabled in your DevTools console (including Verbose)",
-		"font-size: 1.5em;",
+
+	// And finally, run the main class
+	const exitCode = await cheerpjRunMain(
+		mainClass,
+		classpath.join(":").replaceAll("/mc/", "/str/mc/"),
+		"--accessToken",
+		"testtoken",
+		"--version",
+		mcVersion,
 	);
-	console.warn(
-		"DevTools slows down execution. We recommend opening it -after- the game has loaded.",
-	);
-	await initCheerpj();
+
+	if (exitCode !== 0) {
+		// TODO: add the Discord link
+		alert(
+			`Oops, Minecraft crashed!\n\nExit code: ${exitCode}\n\nPlease report this to the devs: @justhypex on Discord`,
+		);
+		throw new Error(`Minecraft exited with code ${exitCode}`);
+	}
 })();
