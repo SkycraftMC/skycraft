@@ -326,6 +326,18 @@ function Java_org_lwjgl_opengl_LinuxDisplay_nGetDefaultScreen() {
 	return 0;
 }
 
+function Java_org_lwjgl_opengl_LinuxDisplay_getRootWindow(display, screen) {
+	console.debug(
+		"Logging parameters of call to Java_org_lwjgl_opengl_LinuxDisplay_getRootWindow",
+	);
+	console.table({ display, screen });
+	console.warn(
+		"Java_org_lwjgl_opengl_LinuxDisplay_getRootWindow is a shim and always returns 0",
+	);
+	// The number of the first root window in the X Window System is typically 0.
+	return 0;
+}
+
 async function Java_org_lwjgl_opengl_LinuxDisplay_nGetAvailableDisplayModes(
 	lib,
 ) {
@@ -365,6 +377,8 @@ function Java_org_lwjgl_opengl_LinuxDisplay_mapRaised() {}
 function Java_org_lwjgl_opengl_LinuxDisplay_nCreateBlankCursor() {}
 
 function Java_org_lwjgl_opengl_LinuxDisplay_nSetTitle() {}
+
+function Java_org_lwjgl_opengl_LinuxDisplay_nSetClassHint() {}
 
 function Java_org_lwjgl_opengl_LinuxMouse_nGetButtonCount() {
 	// TODO: Expand for right click
@@ -1182,6 +1196,8 @@ function Java_org_lwjgl_opengl_LinuxDisplay_nGrabPointer() {}
 
 function Java_org_lwjgl_opengl_LinuxDisplay_nDefineCursor() {}
 
+function Java_org_lwjgl_opengl_LinuxDisplay_nSetWindowIcon() {}
+
 function Java_org_lwjgl_opengl_LinuxMouse_nGetWindowWidth() {
 	return 1000;
 }
@@ -1268,6 +1284,9 @@ export default {
 	Java_org_lwjgl_opengl_LinuxDisplay_mapRaised,
 	Java_org_lwjgl_opengl_LinuxDisplay_nCreateBlankCursor,
 	Java_org_lwjgl_opengl_LinuxDisplay_nSetTitle,
+	Java_org_lwjgl_opengl_LinuxDisplay_getRootWindow,
+	Java_org_lwjgl_opengl_LinuxDisplay_nSetClassHint,
+	Java_org_lwjgl_opengl_LinuxDisplay_nSetWindowIcon,
 	Java_org_lwjgl_opengl_LinuxMouse_nGetButtonCount,
 	Java_org_lwjgl_opengl_LinuxMouse_nQueryPointer,
 	Java_org_lwjgl_opengl_LinuxMouse_nGetWindowHeight,
