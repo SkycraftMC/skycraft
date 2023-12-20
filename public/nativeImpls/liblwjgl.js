@@ -1,0 +1,1 @@
+alert("liblwjgl.js");

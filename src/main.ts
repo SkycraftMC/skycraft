@@ -12,5 +12,8 @@ import { initCheerpj } from "./cheerpj";
 		"%cHere to debug? Make sure all logging levels are enabled in your DevTools console (including Verbose)",
 		"font-size: 1.5em;",
 	);
+	console.warn(
+		"DevTools slows down execution. We recommend opening it -after- the game has loaded.",
+	);
 	await initCheerpj();
 })();
