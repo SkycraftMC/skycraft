@@ -21,23 +21,21 @@ export async function initCheerpj() {
 		javaProperties: ["java.library.path=/app/nativeImpls"],
 		clipboardMode: "permission",
 	});
-	cheerpjCreateDisplay(-1, -1, document.getElementById("container")!);
+	cheerpjCreateDisplay(0, 48, document.getElementById("container")!);
 
 	console.table({
 		mainClass,
 		mcVersion,
+		minecraftArguments,
 	});
 
 	const exitCode = await cheerpjRunMain(
 		mainClass,
 		classPath,
-		minecraftArguments
-			.replaceAll("${auth_player_name}", "testing!")
-			.replaceAll("${version_name}", mcVersion)
-			.replaceAll("${assetIndex}", assetIndex.id)
-			.replaceAll("${auth_player_name}", "testing!")
-			.replaceAll("${accessToken}", "test"),
-		"--demo",
+		"--accessToken",
+		"testtoken",
+		"--version",
+		mcVersion,
 	);
 
 	if (exitCode !== 0) {
