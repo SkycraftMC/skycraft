@@ -13,7 +13,7 @@ const LAUNCHER_META_URL =
 const __filename = fileURLToPath(import.meta.url);
 const currentDirName = dirname(__filename);
 
-const ROOT_PATH = joinPath(currentDirName, "..", "public", "mc");
+const ROOT_PATH = joinPath(currentDirName, "..", "mc");
 
 // Fetch the launcher metadata
 const launcherMeta: MinecraftJson = (await axios.get(LAUNCHER_META_URL)).data;
@@ -39,20 +39,8 @@ const filesToDownload: DownloadableFile[] = [
 ];
 
 libraries.forEach((library) => {
-	console.log(library.name);
 	if (library.natives) {
-		console.log(library.natives);
-		const classifier = library.natives.linux;
-		const native = library.downloads.classifiers![classifier];
-
-		// Check if the native is available for linux
-		if (native) {
-			filesToDownload.push({
-				friendlyName: library.name,
-				url: native.url,
-				destinationPath: joinPath(ROOT_PATH, "natives", native.path),
-			});
-		}
+		console.warn("Skipping native download", library.name);
 	}
 
 	if (library.downloads.artifact) {

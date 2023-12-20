@@ -5,7 +5,7 @@ import {
 	assetIndex,
 	minecraftArguments,
 	javaVersion,
-} from "../public/mc/launcher_meta.json";
+} from "../mc/launcher_meta.json";
 
 export async function initCheerpj() {
 	let classPath = getLibraries().join(":");

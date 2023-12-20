@@ -1,5 +1,5 @@
 export default function getLibraries(): string[] {
-	const libs = import.meta.glob("/public/mc/**/*.jar", {
+	const libs = import.meta.glob("/mc/**/*.jar", {
 		as: "url",
 		eager: true,
 	});
