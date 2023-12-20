@@ -1,1 +1,0 @@
-alert("libjawt.js");
