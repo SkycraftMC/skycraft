@@ -1192,6 +1192,32 @@ function Java_org_lwjgl_opengl_LinuxEvent_nGetButtonButton() {
 	return 1;
 }
 
+function Java_org_lwjgl_opengl_GL11_nglDeleteTextures(lib, n, textures, _) {
+	checkNoList(curList);
+
+	// Validate inputs
+	if (typeof n !== "number") {
+		throw new Error("n must be a number");
+	}
+
+	// Convert textures to Int32Array if needed
+	if (textures instanceof Array) {
+		textures = new Int32Array(textures);
+	}
+
+	console.debug("Leaking memory! Not deleting textures", textures, "n", n);
+}
+
+function Java_org_lwjgl_opengl_GL11_nglTexParameterf(
+	lib,
+	target,
+	pname,
+	param,
+) {
+	checkNoList(curList);
+	glCtx.texParameterf(target, pname, param);
+}
+
 function Java_org_lwjgl_opengl_LinuxDisplay_nGrabPointer() {}
 
 function Java_org_lwjgl_opengl_LinuxDisplay_nDefineCursor() {}
@@ -1398,4 +1424,6 @@ export default {
 	Java_org_lwjgl_opengl_LinuxEvent_nGetKeyState,
 	Java_org_lwjgl_opengl_LinuxKeyboard_lookupKeysym,
 	Java_org_lwjgl_opengl_LinuxKeyboard_lookupString,
+	Java_org_lwjgl_opengl_GL11_nglDeleteTextures,
+	Java_org_lwjgl_opengl_GL11_nglTexParameterf,
 };
