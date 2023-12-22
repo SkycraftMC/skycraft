@@ -8,6 +8,7 @@ import {
 	minecraftArguments,
 	javaVersion,
 } from "../mc/launcher_meta.json";
+import { Java_org_lwjgl_DefaultSysImplementation_getPointerSize } from "./nativeImpls/lwjgl/main";
 
 // CheerpJ only supports Java 8
 if (javaVersion.majorVersion != 8) {
@@ -16,6 +17,8 @@ if (javaVersion.majorVersion != 8) {
 
 let classpath = getClasspath();
 console.debug(classpath);
+
+Java_org_lwjgl_DefaultSysImplementation_getPointerSize();
 
 await cheerpjInit({
 	javaProperties: ["java.library.path=/app/nativeImpls"],
