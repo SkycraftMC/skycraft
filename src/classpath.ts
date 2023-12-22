@@ -4,7 +4,7 @@ export default function getClasspath(): string[] {
 		eager: true,
 	});
 
-	let keys = Object.values(libs);
+	const keys = Object.values(libs);
 	return keys;
 }
 // TODO: Fix "Assets in the public directory are served at the root path."
