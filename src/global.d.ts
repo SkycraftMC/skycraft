@@ -13,6 +13,8 @@ declare global {
 			originalName: string,
 			paramValue: string,
 		) => string;
+		// `Function` being ambiguous is fine, because native functions can accept any number of arguments/types
+		// eslint-disable-next-line @typescript-eslint/ban-types
 		natives?: { [method: string]: Function };
 		overrideDocumentBase?: string;
 		javaProperties?: string[];

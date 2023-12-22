@@ -1,0 +1,5 @@
+dist/*
+
+# This file has lots of errors, it's kinda hacked together
+# I am rewriting it in Rust to make the code much cleaner
+lwjgl.js

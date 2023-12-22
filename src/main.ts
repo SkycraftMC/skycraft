@@ -15,7 +15,7 @@ if (javaVersion.majorVersion != 8) {
 	throw new Error("Unsupported Java version: CheerpJ only supports Java 8");
 }
 
-let classpath = getClasspath();
+const classpath = getClasspath();
 console.debug(classpath);
 
 Java_org_lwjgl_DefaultSysImplementation_getPointerSize();

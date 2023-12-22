@@ -2,7 +2,6 @@ import { createWriteStream } from "fs";
 import { sync as syncChildDirs } from "mkdirp";
 import { fileURLToPath } from "url";
 import { dirname, join as joinPath } from "path";
-import download from "download";
 import axios from "axios";
 import ora from "ora";
 
