@@ -10,7 +10,12 @@
 		"prettier": "^3.0.3",
 		"tsx": "^4.6.2",
 		"typescript": "^5.0.2",
-		"vite": "^5.0.10"
+		"vite": "^5.0.10",
+		"vite-plugin-top-level-await": "^1.4.1",
+		"vite-plugin-wasm": "^3.3.0"
+	},
+	"dependencies": {
+		"lwjgl-natives-webgl": "link:lwjgl-natives-webgl"
 	},
 	"private": true,
 	"scripts": {
