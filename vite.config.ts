@@ -9,11 +9,16 @@ export default defineConfig({
 		rollupOptions: {
 			output: {
 				manualChunks(id) {
-					if (id.includes(path.join("src", "nativeImpls"))) {
-						return `lwjgl`;
+					if (id.includes(path.join("src", "nativeImpls", "lwjgl"))) {
+						return "lwjgl";
+					} else if (
+						id.includes(path.join("src", "nativeImpls", "jawt"))
+					) {
+						return "jawt";
 					}
 				},
 				chunkFileNames: "nativeImpls/[name].js", // Define chunk file naming pattern
+				entryFileNames: "[name].js", // Add this line
 			},
 		},
 		outDir: "dist",
