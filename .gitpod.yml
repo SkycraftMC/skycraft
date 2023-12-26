@@ -1,15 +1,15 @@
 image: gitpod/workspace-bun
 
 tasks:
-  - name: Install dependencies
-    init: |
-      # Install dependencies
-      bun install
-      
-    command: |
-      # Run project
-      bun run dev
+    - name: Install dependencies
+      init: |
+          # Install dependencies
+          bun install
+
+      command: |
+          # Run project
+          bun run dev
 
 ports:
-  - port: 5173
-    onOpen: open-browser
+    - port: 5173
+      onOpen: open-browser
