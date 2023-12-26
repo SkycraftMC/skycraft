@@ -9,6 +9,7 @@ import {
 	javaVersion,
 } from "../mc/launcher_meta.json";
 import { Java_org_lwjgl_DefaultSysImplementation_getPointerSize } from "./nativeImpls/lwjgl/main";
+import { NO_TREE_SHAKING } from "./nativeImpls/jawt/main"; // FIXME: Remove this line when tree shaking is fixed
 
 // CheerpJ only supports Java 8
 if (javaVersion.majorVersion != 8) {
@@ -19,6 +20,7 @@ const classpath = getClasspath("app");
 console.debug(classpath);
 
 Java_org_lwjgl_DefaultSysImplementation_getPointerSize();
+NO_TREE_SHAKING();
 
 await cheerpjInit({
 	javaProperties: ["java.library.path=/app/nativeImpls"],
