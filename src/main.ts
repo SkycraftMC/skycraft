@@ -15,7 +15,7 @@ if (javaVersion.majorVersion != 8) {
 	throw new Error("Unsupported Java version: CheerpJ only supports Java 8");
 }
 
-const classpath = getClasspath();
+const classpath = getClasspath("app");
 console.debug(classpath);
 
 Java_org_lwjgl_DefaultSysImplementation_getPointerSize();
@@ -33,12 +33,12 @@ console.table({
 });
 
 // Download the JARs into the /str/ filesystem
-await downloadJars(classpath);
+await downloadJars();
 
 // And finally, run the main class
 const exitCode = await cheerpjRunMain(
 	mainClass,
-	classpath.join(":").replaceAll("/mc/", "/str/mc/"),
+	getClasspath("str").join(":"),
 	"--accessToken",
 	"testtoken",
 	"--version",

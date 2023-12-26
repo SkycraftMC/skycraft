@@ -1,4 +1,7 @@
-export default async function downloadJars(classpath: string[]) {
+import getClasspath from "./classpath";
+
+export default async function downloadJars() {
+	const classpath = getClasspath();
 	await Promise.all(
 		classpath.map(async (filePath) => {
 			const response = await fetch(filePath);
