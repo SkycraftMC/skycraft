@@ -4,7 +4,6 @@ import { fileURLToPath } from "url";
 import { dirname, join as joinPath } from "path";
 import ora from "ora";
 import { ofetch } from "ofetch";
-import axios from "axios";
 import { version, versionManifestUrl } from "../skycraft.json";
 import type { MinecraftJson } from "./launcherMeta";
 
@@ -67,18 +66,12 @@ async function downloadFile(file: DownloadableFile) {
 
 	try {
 		syncChildDirs(dirname(file.destinationPath));
-		const response = await axios({
-			method: "get",
-			url: file.url,
-			responseType: "stream",
+		const response = await ofetch(file.url, {
+			responseType: "arrayBuffer",
 		});
 
-		response.data.pipe(createWriteStream(file.destinationPath));
-
-		await new Promise((resolve, reject) => {
-			response.data.on("end", resolve);
-			response.data.on("error", reject);
-		});
+		let stream = createWriteStream(file.destinationPath);
+		stream.write(Buffer.from(response));
 
 		spinner.succeed(`Downloaded ${file.friendlyName}`);
 	} catch (error) {
