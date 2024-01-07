@@ -4,21 +4,26 @@
   "devDependencies": {
     "@nabla/vite-plugin-eslint": "^2.0.2",
     "@types/node": "^20.10.4",
-    "axios": "^1.6.2",
+    "axios": "^1.6.5",
     "download": "^8.0.0",
     "mkdirp": "^3.0.1",
+    "ofetch": "^1.3.3",
     "ora": "^8.0.0",
     "prettier": "^3.0.3",
     "tsx": "^4.6.2",
     "typescript": "^5.0.2",
-    "vite": "^5.0.10"
+    "vite": "^5.0.10",
+    "vite-plugin-top-level-await": "^1.4.1",
+    "vite-plugin-wasm": "^3.3.0"
   },
   "private": true,
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "downloadLibraries": "tsx ./scripts/downloadLibraries.ts"
+    "downloadLibraries": "tsx ./scripts/downloadLibraries.ts",
+    "format": "prettier --write .",
+    "clean": "rm -rf mc && rm -rf dist && echo 'Cleaned up assets and dist.'"
   },
   "type": "module"
 }

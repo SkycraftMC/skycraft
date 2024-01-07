@@ -2,13 +2,15 @@ import { createWriteStream } from "fs";
 import { sync as syncChildDirs } from "mkdirp";
 import { fileURLToPath } from "url";
 import { dirname, join as joinPath } from "path";
-import axios from "axios";
 import ora from "ora";
-import { version } from "../skycraft.json";
+import { ofetch } from "ofetch";
+import axios from "axios";
+import { version, versionManifestUrl } from "../skycraft.json";
+import type { MinecraftJson } from "./launcherMeta";
 
 // URL for the launcher metadata
-const LAUNCHER_META_URL =
-	"https://piston-meta.mojang.com/v1/packages/832d95b9f40699d4961394dcf6cf549e65f15dc5/1.12.2.json";
+const { versions } = await ofetch(versionManifestUrl);
+const launcherMetaUrl = versions.find((v) => v.id === version)?.url;
 
 const __filename = fileURLToPath(import.meta.url);
 const currentDirName = dirname(__filename);
@@ -16,7 +18,7 @@ const currentDirName = dirname(__filename);
 const ROOT_PATH = joinPath(currentDirName, "..", "mc");
 
 // Fetch the launcher metadata
-const launcherMeta: MinecraftJson = (await axios.get(LAUNCHER_META_URL)).data;
+const launcherMeta = await ofetch<MinecraftJson>(launcherMetaUrl);
 const libraries = launcherMeta.libraries;
 
 type DownloadableFile = {
@@ -28,7 +30,7 @@ const filesToDownload: DownloadableFile[] = [
 	{
 		// TODO: remove duplicated request
 		friendlyName: `Minecraft ${version} - Launcher Meta`,
-		url: LAUNCHER_META_URL,
+		url: launcherMetaUrl,
 		destinationPath: joinPath(ROOT_PATH, "launcher_meta.json"),
 	},
 	{
