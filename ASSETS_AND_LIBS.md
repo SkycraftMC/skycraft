@@ -5,7 +5,6 @@ Not included due to copyright - get your own.
 You need:
 
 -   libraries
--   natives
 -   game assets
 -   index.json
 

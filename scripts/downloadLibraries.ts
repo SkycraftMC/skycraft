@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import { dirname, join as joinPath } from "path";
 import axios from "axios";
 import ora from "ora";
+import { version } from "../skycraft.json";
 
 // URL for the launcher metadata
 const LAUNCHER_META_URL =
@@ -25,13 +26,13 @@ type DownloadableFile = {
 };
 const filesToDownload: DownloadableFile[] = [
 	{
-		// FIXME: duplicated request
-		friendlyName: "Minecraft 1.12.2 - Launcher Meta",
+		// TODO: remove duplicated request
+		friendlyName: `Minecraft ${version} - Launcher Meta`,
 		url: LAUNCHER_META_URL,
 		destinationPath: joinPath(ROOT_PATH, "launcher_meta.json"),
 	},
 	{
-		friendlyName: "Minecraft 1.12.2 - Client Jar",
+		friendlyName: `Minecraft ${version} - Client Jar`,
 		url: launcherMeta.downloads.client.url,
 		destinationPath: joinPath(ROOT_PATH, "client.jar"),
 	},

@@ -1,24 +1,24 @@
 {
-	"name": "-skycraft",
-	"version": "0.0.0",
-	"devDependencies": {
-		"@nabla/vite-plugin-eslint": "^2.0.2",
-		"@types/node": "^20.10.4",
-		"axios": "^1.6.2",
-		"download": "^8.0.0",
-		"mkdirp": "^3.0.1",
-		"ora": "^8.0.0",
-		"prettier": "^3.0.3",
-		"tsx": "^4.6.2",
-		"typescript": "^5.0.2",
-		"vite": "^5.0.10"
-	},
-	"private": true,
-	"scripts": {
-		"dev": "vite",
-		"build": "vite build",
-		"preview": "vite preview",
-		"downloadLibraries": "tsx ./scripts/downloadLibraries.ts"
-	},
-	"type": "module"
+  "name": "-skycraft",
+  "version": "0.0.0",
+  "devDependencies": {
+    "@nabla/vite-plugin-eslint": "^2.0.2",
+    "@types/node": "^20.10.4",
+    "axios": "^1.6.2",
+    "download": "^8.0.0",
+    "mkdirp": "^3.0.1",
+    "ora": "^8.0.0",
+    "prettier": "^3.0.3",
+    "tsx": "^4.6.2",
+    "typescript": "^5.0.2",
+    "vite": "^5.0.10"
+  },
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "downloadLibraries": "tsx ./scripts/downloadLibraries.ts"
+  },
+  "type": "module"
 }
