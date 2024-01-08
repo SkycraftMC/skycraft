@@ -4,11 +4,11 @@
 
 ```bash
 npm install
-npm run downloadLibraries
+npm run downloadMinecraftFiles
 npm run dev
 ```
 
-Downloading the libraries is **CRUCIAL** for running Skycraft, as we cannot provide them due to copyright. This should take a few seconds. **DO NOT** distribute the Mojang copyrighted files.
+Downloading the MC files is **CRUCIAL** for running Skycraft, as we cannot provide them due to copyright. This should take a few seconds. **DO NOT** distribute the Mojang copyrighted files.
 When pushing to Git, Skycraft keeps the `mc` folder in `.gitignore`.
 
 In the project's current state, you should **NOT** host Skycraft on the public internet.

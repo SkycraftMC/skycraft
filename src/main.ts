@@ -40,6 +40,8 @@ const exitCode = await cheerpjRunMain(
 	"testtoken",
 	"--version",
 	mcVersion,
+	"-assetsDir",
+	"/app/mc/assets/virtual/legacy/",
 );
 
 if (exitCode !== 0) {
