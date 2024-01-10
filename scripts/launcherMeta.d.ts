@@ -1,16 +1,16 @@
-interface Downloads {
+export interface Downloads {
 	client: Download;
 	server: Download;
 }
 
-interface Download {
+export interface Download {
 	sha1: string;
 	size: number;
 	url: string;
 	path: string;
 }
 
-interface AssetIndex {
+export interface AssetIndex {
 	id: string;
 	sha1: string;
 	size: number;
@@ -18,21 +18,21 @@ interface AssetIndex {
 	url: string;
 }
 
-interface LibraryDownload {
-	artifact: Download;
+export interface LibraryDownload {
+	artifact?: Download;
 	classifiers?: {
 		"native-linux": Download;
 	};
 }
 
-interface LibraryRule {
+export interface LibraryRule {
 	action: string;
 	os?: {
 		name: string;
 	};
 }
 
-interface Library {
+export interface Library {
 	name: string;
 	downloads: LibraryDownload;
 	natives?: {
@@ -46,21 +46,21 @@ interface Library {
 	rules?: LibraryRule[];
 }
 
-interface LoggingFile extends Download {
+export interface LoggingFile extends Download {
 	id: string;
 }
 
-interface LoggingConfig {
+export interface LoggingConfig {
 	argument: string;
 	file: LoggingFile;
 	type: string;
 }
 
-interface Logging {
+export interface Logging {
 	client: LoggingConfig;
 }
 
-interface MinecraftJson {
+export interface MinecraftJson {
 	assetIndex: AssetIndex;
 	downloads: Downloads;
 	libraries: Library[];

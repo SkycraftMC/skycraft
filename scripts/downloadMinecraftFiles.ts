@@ -1,7 +1,6 @@
 import { sync as syncChildDirs } from "mkdirp";
 import { fileURLToPath } from "url";
 import { dirname, join as joinPath } from "path";
-import ora from "ora";
 import { ofetch } from "ofetch";
 import {
 	version,
@@ -10,6 +9,7 @@ import {
 	userAgent,
 } from "../skycraft.json";
 import PQueue from "p-queue";
+import ProgressBar from "progress";
 import { promises as fsPromises } from "fs";
 
 import type { MinecraftJson } from "./launcherMeta";
@@ -29,10 +29,6 @@ const launcherMeta = await ofetch<MinecraftJson>(launcherMetaUrl);
 const libraries = launcherMeta.libraries;
 const assetIndex = await ofetch(launcherMeta.assetIndex.url);
 const assetObjects = assetIndex.objects;
-
-function sleep(time) {
-	return new Promise((resolve) => setTimeout(resolve, time));
-}
 
 type DownloadableFile = {
 	friendlyName: string;
@@ -60,13 +56,21 @@ for (const addition in additions) {
 	queue.add(async () => downloadFile(additions[addition]));
 }
 
+const bar = new ProgressBar(":bar :current/:total :percent :etas", {
+	total:
+		additions.length +
+		libraries.filter((library) => library.downloads.artifact).length +
+		length +
+		Object.keys(assetObjects).length,
+});
+
 // Download libraries
 libraries.forEach((library) => {
 	if (library.natives) {
 		console.warn("Skipping native download", library.name);
 	}
 
-	if (library.downloads.artifact) {
+	if ("artifact" in library.downloads) {
 		queue.add(async () =>
 			downloadFile({
 				friendlyName: library.name,
@@ -107,8 +111,6 @@ for (const assetObjectPath in assetObjects) {
 }
 
 async function downloadFile(file: DownloadableFile) {
-	const spinner = ora(`Downloading ${file.friendlyName}`).start();
-
 	try {
 		syncChildDirs(dirname(file.destinationPath));
 		const response = await ofetch(file.url, {
@@ -128,10 +130,9 @@ async function downloadFile(file: DownloadableFile) {
 			}
 		}
 
-		spinner.succeed(`Downloaded ${file.friendlyName}`);
+		bar.tick();
 	} catch (error) {
 		console.error(error);
-		spinner.fail(`Failed to download ${file.friendlyName}`);
 		throw error;
 	}
 }
