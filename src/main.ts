@@ -6,12 +6,22 @@ import {
 	mainClass,
 	id as mcVersion,
 	minecraftArguments,
-	javaVersion,
 } from "../mc/launcher_meta.json";
+// Required because we don't know whether `javaVersion` is there or not
+import * as launcherMeta from "../mc/launcher_meta.json";
 
 // CheerpJ only supports Java 8
-if (javaVersion.majorVersion != 8) {
-	throw new Error("Unsupported Java version: CheerpJ only supports Java 8");
+const javaVersion = launcherMeta.javaVersion;
+if (javaVersion) {
+	if (javaVersion.majorVersion != 8) {
+		throw new Error(
+			"Unsupported Java version: CheerpJ only supports Java 8",
+		);
+	}
+} else {
+	console.warn(
+		"The launcher metadata doesn't contain a Java version - it may not work (that said, it most likely will due to its age)",
+	);
 }
 
 const classpath = getClasspath();
