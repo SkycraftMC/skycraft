@@ -6,7 +6,11 @@ export default function getClasspath(filesystem?: "app" | "str"): string[] {
 
 	let keys = Object.values(libs);
 	if (filesystem) {
-		keys = keys.map((key) => key.replace("/mc/", `/${filesystem}/mc/`));
+		keys = keys.map((key) =>
+			key
+				.replace("/mc/", `/${filesystem}/mc/`)
+				.replace("/assets/", `/${filesystem}/assets/`),
+		); // TODO: remove jank
 	}
 	return keys;
 }

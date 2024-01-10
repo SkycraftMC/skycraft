@@ -48,7 +48,9 @@ let files = getClasspath().map((filePath) =>
 		if (!response.ok) throw new Error(`Failed to download ${filePath}`);
 		const arrayBuffer = await response.arrayBuffer();
 		const data = new Uint8Array(arrayBuffer);
-		const newFilePath = filePath.replace("/mc/", "/str/mc/");
+		const newFilePath = filePath
+			.replace("/mc/", "/str/mc/")
+			.replace("/assets/", "/str/assets/"); // TODO: remove jank
 		console.debug(`Downloaded ${filePath} to ${newFilePath}`);
 		cheerpOSAddStringFile(newFilePath, data);
 	})(),
