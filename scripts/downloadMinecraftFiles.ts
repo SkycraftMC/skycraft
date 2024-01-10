@@ -60,7 +60,6 @@ const bar = new ProgressBar(":bar :current/:total :percent :etas", {
 	total:
 		additions.length +
 		libraries.filter((library) => library.downloads.artifact).length +
-		length +
 		Object.keys(assetObjects).length,
 });
 

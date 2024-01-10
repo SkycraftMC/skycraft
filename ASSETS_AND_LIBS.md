@@ -4,9 +4,9 @@ Not included due to copyright - get your own.
 
 You need:
 
-- libraries
-- game assets
-- index.json
+-   libraries
+-   game assets
+-   index.json
 
 You can run `npm run downloadMinecraftFiles` to download everything.
 
