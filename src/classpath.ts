@@ -1,10 +1,13 @@
-export default function getClasspath(): string[] {
+export default function getClasspath(filesystem?: "app" | "str"): string[] {
 	const libs = import.meta.glob("/mc/**/*.jar", {
 		as: "url",
 		eager: true,
 	});
 
-	const keys = Object.values(libs);
+	let keys = Object.values(libs);
+	if (filesystem) {
+		keys = keys.map((key) => key.replace("/mc/", `/${filesystem}/mc/`));
+	}
 	return keys;
 }
 // TODO: Fix "Assets in the public directory are served at the root path."
