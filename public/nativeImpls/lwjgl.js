@@ -1,11 +1,13 @@
-// https://github.com/leaningtech/cheerpj-natives/blob/main/natives/lwjgl.js
+// Based on https://github.com/leaningtech/cheerpj-natives/blob/8565d7e3f45616a4c4bbe853eb030dc987345ee0/natives/lwjgl.js
 
 // Load the glMatrix library
 await import(
 	"https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/3.4.2/gl-matrix-min.js"
 );
-var glCanvas = document.getElementById("glcanvas");
-var glCtx = glCanvas.getContext("webgl2", { antialias: false, alpha: false });
+
+const glCanvas = document.getElementById("glcanvas");
+const glCtx = glCanvas.getContext("webgl2", { antialias: false, alpha: false });
+
 var vertexShaderSrc = `
 	attribute vec4 aVertexPosition;
 	attribute vec4 aColor;
@@ -279,16 +281,63 @@ glCtx.framebufferRenderbuffer(
 );
 // Synthetize a focus event, it's needed for LWJGL logic
 var eventQueue = [{ type: "focus" }];
-glCanvas.addEventListener("mousemove", function (e) {
-	// TODO: Merge events
-	if (eventQueue.length) return;
-	eventQueue.push({ type: e.type, x: e.clientX, y: e.clientY });
+
+function convertMousePos(x, y) {
+	// We have a framebuffer of 1000x500, but Minecraft renders into the bottom left corner of it.
+	const offsetX = 0;
+	const offsetY = glCanvas.height - 500;
+
+	const xRatio = glCanvas.width / glCanvas.clientWidth;
+	const yRatio = glCanvas.height / glCanvas.clientHeight;
+
+	return [x * xRatio - offsetX, y * yRatio - offsetY];
+}
+
+/** Convert from MouseEvent.button to X11 mouse button */
+function convertMouseButton(button) {
+	return button + 1;
+}
+
+/**
+ * If null, the game does not want the mouse pointer locked.
+ * @type {{ x: number, y: number } | null}
+ */
+let lockedMousePos = null;
+
+glCanvas.addEventListener("mousemove", (evt) => {
+	let [x, y] = convertMousePos(evt.clientX, evt.clientY);
+
+	// If the pointer is locked, we can't use clientX/clientY
+	if (lockedMousePos) {
+		x = lockedMousePos.x += evt.movementX;
+		y = lockedMousePos.y += evt.movementY;
+
+		if (!document.pointerLockElement) {
+			// Game still wants the pointer locked, but it's not
+			Java_org_lwjgl_opengl_LinuxDisplay_nGrabPointer();
+		}
+	}
+
+	if (eventQueue[0]?.type == evt.type) {
+		// Update unhandled event
+		eventQueue[0].x = x;
+		eventQueue[0].y = y;
+	} else {
+		eventQueue.push({ type: evt.type, x, y });
+	}
 });
-function mouseHandler(e) {
-	eventQueue.push({ type: e.type, x: e.clientX, y: e.clientY });
+function mouseHandler(evt) {
+	const [x, y] = convertMousePos(evt.clientX, evt.clientY);
+	eventQueue.push({
+		type: evt.type,
+		x,
+		y,
+		button: convertMouseButton(evt.button),
+	});
 }
 glCanvas.addEventListener("mousedown", mouseHandler);
 glCanvas.addEventListener("mouseup", mouseHandler);
+glCanvas.addEventListener("contextmenu", (evt) => evt.preventDefault());
 function keyHandler(e) {
 	eventQueue.push({ type: e.type, keyCode: e.key.charCodeAt(0) });
 }
@@ -310,7 +359,7 @@ function Java_org_lwjgl_opengl_LinuxDisplay_nUnlockAWT() {}
 
 function Java_org_lwjgl_opengl_LinuxDisplay_setErrorHandler() {}
 
-function Java_org_lwjgl_opengl_LinuxDisplay_openDisplay() {}
+function Java_org_lwjgl_opengl_LinuxDisplay_openDisplay(lib) {}
 
 function Java_org_lwjgl_opengl_LinuxDisplay_nInternAtom() {}
 
@@ -344,6 +393,12 @@ async function Java_org_lwjgl_opengl_LinuxDisplay_nGetAvailableDisplayModes(
 	var DisplayMode = await lib.org.lwjgl.opengl.DisplayMode;
 	var d = await new DisplayMode(1000, 500);
 	return [d];
+}
+
+function Java_org_lwjgl_opengl_LinuxDisplay_nSwitchDisplayMode() {
+	console.debug(
+		"Java_org_lwjgl_opengl_LinuxDisplay_nSwitchDisplayMode does nothing",
+	);
 }
 
 function Java_org_lwjgl_opengl_LinuxDisplay_nGetCurrentGammaRamp() {}
@@ -381,8 +436,7 @@ function Java_org_lwjgl_opengl_LinuxDisplay_nSetTitle() {}
 function Java_org_lwjgl_opengl_LinuxDisplay_nSetClassHint() {}
 
 function Java_org_lwjgl_opengl_LinuxMouse_nGetButtonCount() {
-	// TODO: Expand for right click
-	return 1;
+	return 3;
 }
 
 function Java_org_lwjgl_opengl_LinuxMouse_nQueryPointer() {}
@@ -1091,7 +1145,7 @@ function Java_org_lwjgl_openal_AL_nDestroy() {}
 async function Java_org_lwjgl_opengl_LinuxEvent_createEventBuffer(lib) {
 	// This is intended to represent a X11 event, but we are free to use any layout
 	var ByteBuffer = await lib.java.nio.ByteBuffer;
-	return await ByteBuffer.allocateDirect(12);
+	return await ByteBuffer.allocateDirect(4 * 8);
 }
 
 async function Java_org_lwjgl_opengl_LinuxEvent_nNextEvent(
@@ -1111,11 +1165,13 @@ async function Java_org_lwjgl_opengl_LinuxEvent_nNextEvent(
 			v.setInt32(0, /*ButtonPress*/ 4, true);
 			v.setInt32(4, e.x, true);
 			v.setInt32(8, e.y, true);
+			v.setInt32(12, e.button, true);
 			break;
 		case "mouseup":
 			v.setInt32(0, /*ButtonRelease*/ 5, true);
 			v.setInt32(4, e.x, true);
 			v.setInt32(8, e.y, true);
+			v.setInt32(12, e.button, true);
 			break;
 		case "mousemove":
 			v.setInt32(0, /*MotionNotify*/ 6, true);
@@ -1187,38 +1243,20 @@ async function Java_org_lwjgl_opengl_LinuxEvent_nGetButtonType(lib, buffer) {
 	return v.getInt32(0, true);
 }
 
-function Java_org_lwjgl_opengl_LinuxEvent_nGetButtonButton() {
-	// X11 button 1 (left)
-	return 1;
+async function Java_org_lwjgl_opengl_LinuxEvent_nGetButtonButton(lib, buffer) {
+	const v = lib.getJNIDataView();
+	return v.getInt32(12, true);
 }
 
-function Java_org_lwjgl_opengl_GL11_nglDeleteTextures(lib, n, textures, _) {
-	checkNoList(curList);
-
-	// Validate inputs
-	if (typeof n !== "number") {
-		throw new Error("n must be a number");
-	}
-
-	// Convert textures to Int32Array if needed
-	if (textures instanceof Array) {
-		textures = new Int32Array(textures);
-	}
-
-	console.debug("Leaking memory! Not deleting textures", textures, "n", n);
+function Java_org_lwjgl_opengl_LinuxDisplay_nGrabPointer() {
+	glCanvas.requestPointerLock({ unadjustedMovement: true });
+	lockedMousePos = { x: 0, y: 0 };
 }
 
-function Java_org_lwjgl_opengl_GL11_nglTexParameterf(
-	lib,
-	target,
-	pname,
-	param,
-) {
-	checkNoList(curList);
-	glCtx.texParameterf(target, pname, param);
+function Java_org_lwjgl_opengl_LinuxDisplay_nUngrabPointer() {
+	document.exitPointerLock();
+	lockedMousePos = null;
 }
-
-function Java_org_lwjgl_opengl_LinuxDisplay_nGrabPointer() {}
 
 function Java_org_lwjgl_opengl_LinuxDisplay_nDefineCursor() {}
 
@@ -1411,7 +1449,9 @@ export default {
 	Java_org_lwjgl_opengl_LinuxEvent_nGetButtonType,
 	Java_org_lwjgl_opengl_LinuxEvent_nGetButtonButton,
 	Java_org_lwjgl_opengl_LinuxDisplay_nGrabPointer,
+	Java_org_lwjgl_opengl_LinuxDisplay_nUngrabPointer,
 	Java_org_lwjgl_opengl_LinuxDisplay_nDefineCursor,
+	Java_org_lwjgl_opengl_LinuxDisplay_nSwitchDisplayMode,
 	Java_org_lwjgl_opengl_LinuxMouse_nGetWindowWidth,
 	Java_org_lwjgl_opengl_LinuxMouse_nSendWarpEvent,
 	Java_org_lwjgl_opengl_LinuxMouse_nWarpCursor,
@@ -1424,6 +1464,4 @@ export default {
 	Java_org_lwjgl_opengl_LinuxEvent_nGetKeyState,
 	Java_org_lwjgl_opengl_LinuxKeyboard_lookupKeysym,
 	Java_org_lwjgl_opengl_LinuxKeyboard_lookupString,
-	Java_org_lwjgl_opengl_GL11_nglDeleteTextures,
-	Java_org_lwjgl_opengl_GL11_nglTexParameterf,
 };
