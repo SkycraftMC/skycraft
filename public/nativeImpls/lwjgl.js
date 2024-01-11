@@ -1,5 +1,3 @@
-// Based on https://github.com/leaningtech/cheerpj-natives/blob/8565d7e3f45616a4c4bbe853eb030dc987345ee0/natives/lwjgl.js
-
 // Load the glMatrix library
 await import(
 	"https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/3.4.2/gl-matrix-min.js"
@@ -305,9 +303,9 @@ function convertMouseButton(button) {
 let lockedMousePos = null;
 
 glCanvas.addEventListener("mousemove", (evt) => {
-	let [x, y] = convertMousePos(evt.clientX, evt.clientY);
+	let [x, y] = convertMousePos(evt.offsetX, evt.offsetY);
 
-	// If the pointer is locked, we can't use clientX/clientY
+	// If the pointer is locked, we can't use offsetX/offsetY
 	if (lockedMousePos) {
 		x = lockedMousePos.x += evt.movementX;
 		y = lockedMousePos.y += evt.movementY;
@@ -327,7 +325,7 @@ glCanvas.addEventListener("mousemove", (evt) => {
 	}
 });
 function mouseHandler(evt) {
-	const [x, y] = convertMousePos(evt.clientX, evt.clientY);
+	const [x, y] = convertMousePos(evt.offsetX, evt.offsetY);
 	eventQueue.push({
 		type: evt.type,
 		x,
@@ -338,8 +336,32 @@ function mouseHandler(evt) {
 glCanvas.addEventListener("mousedown", mouseHandler);
 glCanvas.addEventListener("mouseup", mouseHandler);
 glCanvas.addEventListener("contextmenu", (evt) => evt.preventDefault());
+
+/** @param {KeyboardEvent} e */
 function keyHandler(e) {
-	eventQueue.push({ type: e.type, keyCode: e.key.charCodeAt(0) });
+	// Convert to LinuxKeycodes.java keycodes
+	// https://github.com/LWJGL/lwjgl/blob/master/src/java/org/lwjgl/opengl/LinuxKeycodes.java
+	let keyCode = e.keyCode || e.key.charCodeAt(0); // most map to ASCII
+	switch (e.key) {
+		case "Escape": // note will have to press twice if pointer is locked
+			keyCode = 0xff1b;
+			break;
+		case "Shift":
+			keyCode = 0xffe1;
+			break;
+		case "Control":
+			keyCode = 0xffe3;
+			break;
+		case "Meta":
+			keyCode = 0xffe7;
+			break;
+		case "Alt":
+			keyCode = 0xffe9;
+			break;
+	}
+	console.log(e.key, keyCode);
+
+	eventQueue.push({ type: e.type, keyCode });
 }
 glCanvas.addEventListener("keydown", keyHandler);
 glCanvas.addEventListener("keyup", keyHandler);
@@ -375,30 +397,12 @@ function Java_org_lwjgl_opengl_LinuxDisplay_nGetDefaultScreen() {
 	return 0;
 }
 
-function Java_org_lwjgl_opengl_LinuxDisplay_getRootWindow(display, screen) {
-	console.debug(
-		"Logging parameters of call to Java_org_lwjgl_opengl_LinuxDisplay_getRootWindow",
-	);
-	console.table({ display, screen });
-	console.warn(
-		"Java_org_lwjgl_opengl_LinuxDisplay_getRootWindow is a shim and always returns 0",
-	);
-	// The number of the first root window in the X Window System is typically 0.
-	return 0;
-}
-
 async function Java_org_lwjgl_opengl_LinuxDisplay_nGetAvailableDisplayModes(
 	lib,
 ) {
 	var DisplayMode = await lib.org.lwjgl.opengl.DisplayMode;
 	var d = await new DisplayMode(1000, 500);
 	return [d];
-}
-
-function Java_org_lwjgl_opengl_LinuxDisplay_nSwitchDisplayMode() {
-	console.debug(
-		"Java_org_lwjgl_opengl_LinuxDisplay_nSwitchDisplayMode does nothing",
-	);
 }
 
 function Java_org_lwjgl_opengl_LinuxDisplay_nGetCurrentGammaRamp() {}
@@ -433,8 +437,6 @@ function Java_org_lwjgl_opengl_LinuxDisplay_nCreateBlankCursor() {}
 
 function Java_org_lwjgl_opengl_LinuxDisplay_nSetTitle() {}
 
-function Java_org_lwjgl_opengl_LinuxDisplay_nSetClassHint() {}
-
 function Java_org_lwjgl_opengl_LinuxMouse_nGetButtonCount() {
 	return 3;
 }
@@ -456,6 +458,10 @@ function Java_org_lwjgl_opengl_LinuxKeyboard_allocateComposeStatus() {}
 function Java_org_lwjgl_opengl_LinuxContextImplementation_nCreate() {}
 
 function Java_org_lwjgl_opengl_LinuxContextImplementation_nMakeCurrent() {}
+
+function Java_org_lwjgl_opengl_LinuxContextImplementation_nIsCurrent() {
+	return true;
+}
 
 function Java_org_lwjgl_opengl_GLContext_ngetFunctionAddress(lib, stringPtr) {
 	// Return any non-zero address, methods are called by name anyway
@@ -1260,7 +1266,7 @@ function Java_org_lwjgl_opengl_LinuxDisplay_nUngrabPointer() {
 
 function Java_org_lwjgl_opengl_LinuxDisplay_nDefineCursor() {}
 
-function Java_org_lwjgl_opengl_LinuxDisplay_nSetWindowIcon() {}
+function Java_org_lwjgl_opengl_LinuxDisplay_nSetInputFocus() {}
 
 function Java_org_lwjgl_opengl_LinuxMouse_nGetWindowWidth() {
 	return 1000;
@@ -1348,18 +1354,17 @@ export default {
 	Java_org_lwjgl_opengl_LinuxDisplay_mapRaised,
 	Java_org_lwjgl_opengl_LinuxDisplay_nCreateBlankCursor,
 	Java_org_lwjgl_opengl_LinuxDisplay_nSetTitle,
-	Java_org_lwjgl_opengl_LinuxDisplay_getRootWindow,
-	Java_org_lwjgl_opengl_LinuxDisplay_nSetClassHint,
-	Java_org_lwjgl_opengl_LinuxDisplay_nSetWindowIcon,
 	Java_org_lwjgl_opengl_LinuxMouse_nGetButtonCount,
 	Java_org_lwjgl_opengl_LinuxMouse_nQueryPointer,
 	Java_org_lwjgl_opengl_LinuxMouse_nGetWindowHeight,
+	Java_org_lwjgl_opengl_LinuxDisplay_nSetInputFocus,
 	Java_org_lwjgl_opengl_LinuxKeyboard_getModifierMapping,
 	Java_org_lwjgl_opengl_LinuxKeyboard_nSetDetectableKeyRepeat,
 	Java_org_lwjgl_opengl_LinuxKeyboard_openIM,
 	Java_org_lwjgl_opengl_LinuxKeyboard_allocateComposeStatus,
 	Java_org_lwjgl_opengl_LinuxContextImplementation_nCreate,
 	Java_org_lwjgl_opengl_LinuxContextImplementation_nMakeCurrent,
+	Java_org_lwjgl_opengl_LinuxContextImplementation_nIsCurrent,
 	Java_org_lwjgl_opengl_GLContext_ngetFunctionAddress,
 	Java_org_lwjgl_opengl_GL11_nglGetString,
 	Java_org_lwjgl_opengl_GL11_nglGetIntegerv,
@@ -1451,7 +1456,6 @@ export default {
 	Java_org_lwjgl_opengl_LinuxDisplay_nGrabPointer,
 	Java_org_lwjgl_opengl_LinuxDisplay_nUngrabPointer,
 	Java_org_lwjgl_opengl_LinuxDisplay_nDefineCursor,
-	Java_org_lwjgl_opengl_LinuxDisplay_nSwitchDisplayMode,
 	Java_org_lwjgl_opengl_LinuxMouse_nGetWindowWidth,
 	Java_org_lwjgl_opengl_LinuxMouse_nSendWarpEvent,
 	Java_org_lwjgl_opengl_LinuxMouse_nWarpCursor,
