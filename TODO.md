@@ -1,5 +1,5 @@
 # To-Dos
 
-- The build is completely broken :/ This should be an easy fix though
+-   The build is completely broken :/ This should be an easy fix though
 
-- We are copying `mc` on build - which includes duplicates of libraries
+-   We are copying `mc` on build - which includes duplicates of libraries

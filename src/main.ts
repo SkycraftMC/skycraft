@@ -42,7 +42,7 @@ console.debug("/str/ classpath:", getClasspath("str"));
 
 // Download the JARs into the /str/ filesystem
 const downloadStart = performance.now();
-let files = getClasspath().map((filePath) =>
+const downloadTasks = getClasspath().map((filePath) =>
 	(async function () {
 		const response = await fetch(filePath);
 		if (!response.ok) throw new Error(`Failed to download ${filePath}`);
@@ -55,12 +55,12 @@ let files = getClasspath().map((filePath) =>
 		cheerpOSAddStringFile(newFilePath, data);
 	})(),
 );
-console.debug(files);
-await Promise.allSettled(files);
+await Promise.allSettled(downloadTasks);
 console.log(
-	`Downloaded ${getClasspath().length} JARs in ${
-		performance.now() - downloadStart
-	}ms`,
+	`Downloaded ${getClasspath().length} JARs in ${(
+		(performance.now() - downloadStart) /
+		1000
+	).toFixed(3)}ms`,
 );
 
 // And finally, run the main class

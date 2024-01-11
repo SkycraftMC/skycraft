@@ -4,8 +4,11 @@
 	"devDependencies": {
 		"@types/common-tags": "^1.8.4",
 		"@types/node": "^20.10.6",
+		"@typescript-eslint/eslint-plugin": "latest",
+		"eslint": "^8.56.0",
 		"mkdirp": "^3.0.1",
 		"ofetch": "^1.3.3",
+		"oxlint": "^0.1.2",
 		"prettier": "^3.0.3",
 		"progress": "^2.0.3",
 		"tsx": "^4.6.2",
@@ -22,6 +25,7 @@
 		"preview": "vite preview",
 		"downloadMinecraftFiles": "tsx ./scripts/downloadMinecraftFiles.ts",
 		"format": "prettier --write .",
+		"check": "prettier --check . && oxlint . && eslint .",
 		"clean": "rm -rf mc && rm -rf dist && echo 'Cleaned up assets and dist.'"
 	},
 	"type": "module",
