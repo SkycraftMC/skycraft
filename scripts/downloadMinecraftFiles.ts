@@ -17,6 +17,11 @@ import type { MinecraftJson } from "./launcherMeta";
 // URL for the launcher metadata
 const { versions } = await ofetch(versionManifestUrl);
 const launcherMetaUrl = versions.find((v) => v.id === version)?.url;
+if (!launcherMetaUrl) {
+	throw new Error(
+		`Could not find version ${version}. You probably typed it in wrong.`,
+	);
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const currentDirName = dirname(__filename);
