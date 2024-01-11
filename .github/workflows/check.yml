@@ -23,3 +23,6 @@ jobs:
 
             - name: Run check
               run: bun run check
+
+            - name: Test for successful build
+              run: bun run build
