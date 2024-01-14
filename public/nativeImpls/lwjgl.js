@@ -3,7 +3,7 @@ await import(
 	"https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/3.4.2/gl-matrix-min.js"
 );
 
-const glCanvas = document.getElementById("glcanvas");
+const glCanvas = document.getElementById("glcanvas"); // TODO: Find a more portable way to get the *current* canvas
 const glCtx = glCanvas.getContext("webgl2", { antialias: false, alpha: false });
 
 var vertexShaderSrc = `
@@ -1266,8 +1266,6 @@ function Java_org_lwjgl_opengl_LinuxDisplay_nUngrabPointer() {
 
 function Java_org_lwjgl_opengl_LinuxDisplay_nDefineCursor() {}
 
-function Java_org_lwjgl_opengl_LinuxDisplay_nSetInputFocus() {}
-
 function Java_org_lwjgl_opengl_LinuxMouse_nGetWindowWidth() {
 	return 1000;
 }
@@ -1357,7 +1355,6 @@ export default {
 	Java_org_lwjgl_opengl_LinuxMouse_nGetButtonCount,
 	Java_org_lwjgl_opengl_LinuxMouse_nQueryPointer,
 	Java_org_lwjgl_opengl_LinuxMouse_nGetWindowHeight,
-	Java_org_lwjgl_opengl_LinuxDisplay_nSetInputFocus,
 	Java_org_lwjgl_opengl_LinuxKeyboard_getModifierMapping,
 	Java_org_lwjgl_opengl_LinuxKeyboard_nSetDetectableKeyRepeat,
 	Java_org_lwjgl_opengl_LinuxKeyboard_openIM,

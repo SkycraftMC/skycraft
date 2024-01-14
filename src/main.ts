@@ -29,7 +29,7 @@ await cheerpjInit({
 	javaProperties: ["java.library.path=/app/nativeImpls"],
 	clipboardMode: "permission",
 });
-cheerpjCreateDisplay(-1, -1, document.getElementById("container")!);
+cheerpjCreateDisplay(0, 0, document.getElementById("container")!);
 
 // Print some debug info
 console.table({
