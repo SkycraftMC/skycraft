@@ -13,8 +13,6 @@ When pushing to Git, Skycraft keeps the `mc` folder in `.gitignore`.
 
 In the project's current state, you should **NOT** host Skycraft on the public internet.
 
-You also need to download the assets (TODO)
-
 ## Running a different Minecraft version
 
 Some notes:
