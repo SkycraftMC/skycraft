@@ -20,6 +20,7 @@ Some notes:
 -   Minecraft versions past 1.16.5 will **not** work until CheerpJ supports dynamic loading of JNI components - that way, we can hopefully compile LWJGL + gl4es together to run OpenGL 3.3 in the browser!
 -   At the current stage, MC versions that require OpenGL 2/3 won't work because of the **very** limited OpenGL -> WebGL translation layer.
     -   Work is being done to write a better one in Rust [here](https://github.com/SkycraftMC/lwjgl-natives-webgl)
+-   Not all OpenGL 1.x functions are implemented either :/
 
 To change the version, you should modify the `version` key in `skycraft.json`.
 
