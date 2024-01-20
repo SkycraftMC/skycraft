@@ -3,7 +3,7 @@ await import(
 	"https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/3.4.2/gl-matrix-min.js"
 );
 
-const glCanvas = document.getElementById("glcanvas"); // TODO: Find a more portable way to get the *current* canvas
+const glCanvas = document.getElementById("glcanvas");
 const glCtx = glCanvas.getContext("webgl2", { antialias: false, alpha: false });
 
 var vertexShaderSrc = `

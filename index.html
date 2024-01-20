@@ -4,12 +4,12 @@
 		<meta charset="UTF-8" />
 		<link rel="icon" type="image/svg+xml" href="/vite.svg" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<script src="https://cjrtnc.leaningtech.com/3_20240110_341/cj3loader.js"></script>
+		<script src="https://cjrtnc.leaningtech.com/3_20240119_344/cj3loader.js"></script>
 		<title>Skycraft</title>
 	</head>
 	<body>
 		<div id="container"></div>
-		<div id="console"></div>
+		<pre id="console"></pre>
 		<!--
 			854x480 is the default window size in 1.2.5
 			The game has several bugs where e.g. screenshots don't work with larger window sizes
@@ -18,7 +18,14 @@
 			For later versions, we'll probably want to use a larger window size (or better yet,
 			allow fullscreen).
 		-->
-		<canvas id="glcanvas" width="854" height="480"></canvas>
+		<main>
+			<canvas
+				width="854"
+				height="480"
+				tabindex="-1"
+				id="glcanvas"
+			></canvas>
+		</main>
 		<script type="module" src="/src/main.ts"></script>
 	</body>
 </html>

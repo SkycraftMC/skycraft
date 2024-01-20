@@ -1,9 +1,24 @@
-html,
-body {
-	margin: 0;
+main {
+	display: inline-block;
+	aspect-ratio: 854 / 480;
+
+	background: black;
+	color: #eee;
+	color-scheme: dark;
+
+	width: 854px;
+	height: 480px;
 }
 
 canvas {
 	width: inherit;
 	height: inherit;
 }
+
+/* .display {
+	width: 854px;
+	height: 480px;
+	position: absolute;
+	inset: 0;
+	visibility: hidden;
+} */
