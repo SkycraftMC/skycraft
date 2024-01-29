@@ -1,6 +1,6 @@
 {
-	"version": "1.2.5",
-	"versionManifestUrl": "https://launchermeta.mojang.com/mc/game/version_manifest.json",
+	"version": "1.12.2",
+	"versionManifestUrl": "https://raw.githubusercontent.com/MCPHackers/BetterJSONs/main/version_manifest.json",
 	"assetApiBaseUrl": "https://resources.download.minecraft.net",
 	"userAgent": "SkycraftLauncher/1.0 (Linux; Contact: skycraft@skyfall.33mail.com)"
 }
